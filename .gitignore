@@ -1,0 +1,6 @@
+**/logs/**
+**/vault_pass_*.yml
+**/output_*/
+**/.terraform/
+**/*tfstate
+**/*tfstate.backup
