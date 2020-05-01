@@ -1,6 +1,6 @@
-**/logs/**
-**/vault_pass_*.yml
-**/output_*/
-**/.terraform/
-**/*tfstate
-**/*tfstate.backup
+ansible/**/logs/**
+packer/**/output_*/
+packer/googlecompute/*/*.json
+terraform/**/.terraform/
+terraform/**/*tfstate*
+terraform/google/*/*.json

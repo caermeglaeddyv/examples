@@ -1,18 +1,18 @@
 
 # Main configuration file, new HCL2 syntax is used instead of .json one.
 # Introduction to Packer HCL2:
-# https://packer.io/guides/hcl/
+# https://www.packer.io/guides/hcl/
 # Packer HCL Configuration Language documentation:
-# https://packer.io/docs/configuration/from-1.5/index.html
+# https://www.packer.io/docs/configuration/from-1.5/index.html
 
 # To start build process, install packer binary like said here:
-# https://packer.io/intro/getting-started/install.html
+# https://www.packer.io/intro/getting-started/install.html
 # Then run "packer build ." from the root of directory
 # containing packer configuration and variable files, including this one.
 
 # Reference to earch configurable parameter here and much more
 # can be found on official documentation of "vsphere-iso" Packer builder:
-# https://packer.io/docs/builders/vsphere-iso.html
+# https://www.packer.io/docs/builders/vsphere-iso.html
 # Type of each variable and default values can be found inside
 # "variables.pkr.hcl" file. Description of each variable and actual values,
 # which must be filled out, can be found inside "packer.auto.pkrvars.hcl"

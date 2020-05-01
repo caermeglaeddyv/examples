@@ -1,0 +1,98 @@
+
+# If you're authenticated to managed hosts via password, define these variables.
+# If your ssh user is not root, it must be in sudoers group ("wheel")
+# and "ansible_become_pass" variable must be the same as "ansible_ssh_pass",
+# otherwise root password must be provided via "ansible_become_pass" variable.
+# It's strongly recommended to disable password authentication and use ssh keypair,
+# If this is not possible, it's recommended to encrypt your password(s) via Ansible Vault.
+# That's done by default in this example, you can check "vault_pass_example.yml",
+# change it's content and reencrypt your password if needed, like this:
+# ansible-vault encrypt-string -n ansible_ssh_pass "SECURE_SSH_PASSWORD"
+# ansible-vault encrypt_string -n ansible_become_pass "SECURE_SSH_PASSWORD"
+# Then replace both variables inside needed files in group_vars/ and host_vars/
+# directories with output (no defaults). Here is used password for "ansible" user
+# which was created in Packer example using kickstart file and is equal to "@ns1bl3_P@ssw0rd_01!":
+ansible_ssh_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66306630353531646166323930666661613466373833363138396136643536333635303262376264
+          3337373530353363333431653738613066366337323336330a613966363139643362306639623439
+          63623361643865353233303966616638613166323466613764373563393661373266326337383332
+          6564656334666539660a633332636663623961303631333666323936663461666235653564376136
+          37616365303632306137326439646239666462333035616330303963303537393137
+ansible_become_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          64666264363431393438343663343731306462343531393534636637363135353739616637633362
+          3766386634633531313536663663643231333536643631610a613332393566623962356266313039
+          31666430383832613532326263336438366166306461366133623131616534386330396134353134
+          6661623266323233320a393030653336373239306331353535393862306131313564376533613235
+          64313563656637373632393462396337646335663830626161613835643231336535
+
+
+# Project name needed to logically separate group of hosts,
+# used to create folders that contain directories
+# with different environments (default "test"):
+project_name: rear-example
+
+# Environment name needed to logically separate group of hosts that belongs
+# to single environment of the project ("development", "staging", "production" etc),
+# used as directory name to create and store ssh keypairs in (default "development"):
+# environment: development
+
+
+# Arguments passed to 'rear mkbackup command' before starting
+# backup process (default "-d"):
+rear_mkbackup_args: -d
+
+
+# Host used to store backups, string can be DNS name of IP address
+# (default "{{ hostvars[groups.backuphosts[0]].ansible_default_ipv4.address }}"):
+# rear_rsync_remote_host: "{{ hostvars[groups.backuphosts[0]].ansible_default_ipv4.address }}"
+
+# This user must be allowed to login via ssh on backup host,
+# and have write access to rear_rsync_remote_path directory, pay attention that
+# this is teested only with root user, so using the other one can cause problems (default "root"):
+# rear_rsync_remote_user: root
+
+# Absolute path of directory on backup host, which will store files needed for restore (default "/var/lib/rear"):
+# rear_rsync_remote_path: /var/lib/rear
+
+
+# Absolute paths of files which must be excluded from backup, separated by whitespace (default "'/var/log/lastlog'"):
+# rear_files_to_exclude: "'/var/log/lastlog'"
+# Due to backup problems which are caused by incorrectly displayed
+# size of "var/log/lastlog" file, it will be excluded from backup by default,
+# if you want to backup this file, you'll need to do it manually
+# or write task/playbook which manually backups this file.
+
+
+# Array of systemd service names, which will be stopped and disabled before backup, to prevent
+# problems with unfinished work of applications, databases and other services. These services
+# will be stopped on every host. If you want to stop different services on different ansible groups
+# or hosts, you must create directories/files for group and host variables, and define it there (no defaults):
+# rear_services_to_stop:
+# example(!)
+# - docker
+# - kubelet
+
+# If stopped services must be also disabled at next reboot or not. This variable is usually
+# used when migration is performed, and there is no need to start services automatically,
+# if you want first check if OS is properly migrated or not (default false):
+# rear_disable_services: false
+
+
+# If value of this variable is true, then mapping directory and files will be created
+# to change ip address(es), subnet mask(s) and route(s) which will be present on rescue system.
+# This mostly needed when rescue environment started in network that differs from original one (default false):
+rear_mappings: true
+
+# Network device name for use in recover environment (default "{{ ansible_default_ipv4.interface }}"):
+# rear_mappings_dev: "{{ ansible_default_ipv4.interface }}"
+
+# Network interface ip for use in recover environment (default "{{ ansible_default_ipv4.address }}"):
+# rear_mappings_ip: "{{ ansible_default_ipv4.address }}"
+
+# Network interface subnet mask for use in recover environment (default "{{ ansible_default_ipv4.netmask }}"):
+# rear_mappings_subnet_mask: "{{ ansible_default_ipv4.netmask }}"
+
+# Default gateway's ip for use in recover environment (default "{{ ansible_default_ipv4.gateway }}"):
+# rear_mappings_gateway: "{{ ansible_default_ipv4.gateway }}"

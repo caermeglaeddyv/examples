@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: no
+  tasks:
+  - name: Check ansible version >=2.8.6
+    assert:
+      msg: Ansible must be v2.8.6 or higher
+      that:
+      - ansible_version.string is version("2.8.6", ">=")
+    tags:
+    - check
+  vars:
+    ansible_connection: local
+
+- hosts: all
+  become: yes
+  tasks:
+  - import_role:
+      name: rear
