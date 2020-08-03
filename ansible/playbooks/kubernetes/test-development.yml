@@ -1,0 +1,121 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: no
+  tasks:
+  - name: Check ansible version >=2.8.6
+    assert:
+      msg: Ansible must be v2.8.6 or higher
+      that:
+      - ansible_version.string is version("2.8.6", ">=")
+    tags:
+    - check
+  vars:
+    ansible_connection: local
+
+- hosts: all
+  become: yes
+  tasks:
+  - name: prepare_os
+    include_role:
+      name: prepare_os
+
+- hosts: kubernetescluster
+  become: yes
+  tasks:
+  - name: kubernetes/prepare_cluster
+    include_role:
+      name: kubernetes/prepare_cluster
+  - name: container_runtime
+    include_role:
+      name: container_runtime
+
+- hosts: masternodes
+  become: yes
+  tasks:
+  - name: keepalived
+    include_role:
+      name: keepalived
+  - name: haproxy
+    include_role:
+      name: haproxy
+  # As our keepalived and haproxy roles are executed on the hosts which will carry kubernetes/master role,
+  # it's very important to make sure that before cluster initialization on first control-plane node,
+  # keepalived and haproxy services are started on that node, and stopped on others:
+  - name: stop keepalived and haproxy everywhere except first controller
+    systemd:
+      daemon_reload: yes
+      name: "{{ item }}"
+      state: stopped
+    with_items:
+    - keepalived
+    - haproxy
+    when: inventory_hostname != ansible_play_batch[0]
+
+- hosts: etcdcluster
+  become: yes
+  tasks:
+  # Because our example playbook uses "with_kubeadm" deployment type of etcd as only on esupported for now,
+  # we need to run "kubernetes/prepare_cluster" role, and "container_runtime" role
+  # with "container_runtime_name: docker" to install prerequisites for etcd installation via kubeadm:
+  - name: pre-etcd
+    include_role:
+      name: kubernetes/prepare_cluster
+    when: etcd_deployment_type == 'with_kubeadm'
+  - name: cri-etcd
+    include_role:
+      name: container_runtime
+    when: etcd_deployment_type == 'with_kubeadm'
+  - name: etcd
+    include_role:
+      name: etcd
+
+- hosts: masternodes
+  become: yes
+  tasks:
+  - name: kubernetes/master
+    include_role:
+      name: kubernetes/master
+  # Start keepalived and haproxy service to enable floating IP functiuonality and load-balancing:
+  - name: start keepalived and haproxy everywhere
+    systemd:
+      daemon_reload: yes
+      name: "{{ item }}"
+      state: started
+    with_items:
+    - keepalived
+    - haproxy
+
+- hosts: kubernetescluster
+  become: yes
+  tasks:
+  - name: net_addon
+    include_role:
+      name: net_addon
+
+- hosts: workernodes
+  become: yes
+  tasks:
+  - name: kubernetes/worker
+    include_role:
+      name: kubernetes/worker
+
+- hosts: masternodes
+  become: yes
+  tasks:
+  # Delete admin kubeconfig from master to keep it only on localhost for better security:
+  - name: delete admin.conf from remote
+    file:
+      path: /etc/kubernetes/admin.conf
+      state: absent
+
+- hosts: all
+  become: yes
+  tasks:
+  # Remove unneeded yum packages if present, for better security and to free up disk space:
+  - name: remove unneeded yum packages
+    yum:
+      autoremove: yes
+ # Clean yum cache to free up disk space:
+  - name: clean up yum cache
+    command: /usr/bin/yum clean all

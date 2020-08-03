@@ -1,0 +1,8 @@
+# Array of extra /etc/hosts entries which need to be added to your host(s).
+# You can use group_vars and host_vars functionality to separate entries for
+# inventory groups and hosts respectively. Each array member is a string which
+# repeats line in /etc/hosts file, this one is needed to make possible of
+# joining the cluster via hostname (no defaults):
+# example(!)
+prepare_os_extra_etc_hosts:
+- "{{ vip_address }}     {{ vip_host }}"

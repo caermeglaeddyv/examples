@@ -1,0 +1,6 @@
+# The name of container runtime that will be installed,
+# role with this name for chosen runtime will be loaded and executed (default "docker"),
+# as our "etcd_deployment_type" is "with_kubeadm" we need to define container runtime
+# for etcd cluster host group to make shure that docker as prerequisite will installed,
+# instead of other, it it will be used in kubernetes installation:
+container_runtime_name: docker

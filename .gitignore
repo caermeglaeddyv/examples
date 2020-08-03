@@ -1,4 +1,11 @@
-ansible/**/logs/**
+ansible/.venv/
+ansible/inventories/**/logs/
+ansible/inventories/**/id_rsa**
+ansible/inventories/**/passphrase
+ansible/inventories/kubernetes/host_vars/localhost/
+ansible/playbooks/kubernetes/example-files/*
+!ansible/playbooks/kubernetes/example-files/kubernetes/
+ansible/playbooks/kubernetes/*-vms.yml
 packer/**/output_*/
 packer/googlecompute/*/*.json
 terraform/**/.terraform/

@@ -1,0 +1,323 @@
+### Variables created and used in this example, and
+### used as reference for other role-specific variables.
+### You can create your own ones with own (but supported) values,
+### the only requirements is to not break logic and use them in right places!
+
+# Project name needed to logically separate group of hosts:
+project_name: example
+
+# Environment name needed to logically separate group of hosts that belongs
+# to single environment of the project ("development", "staging", "production" etc):
+project_environment: development
+
+# Kubernetes version to use with roles:
+k8s_version: 1.15.10
+
+# Hostname or DNS name of highly-available api-server endpoint:
+vip_host: master
+
+# IP address of highly-available api-server endpoint:
+vip_address: 
+
+# TCP port of highly-available api-server endpoint:
+vip_port: 443
+
+# Absolute or relative path to the directory on localhost which
+# will be used to store role or project-specific files for future reuse:
+local_dir: example-files
+
+
+### Role-specific variables.
+
+# Version of chrony package (default 3.4):
+# prepare_os_chrony_version: 3.4
+
+# Timezone to set with timedatectl utility (default "UTC"):
+# prepare_os_timezone: UTC
+
+# Path to ssh public key which will be deployed to every inventory host
+# (absolute or relative to directory from which playbook is executed),
+# if defined, it will also disable password authentication on ssh server (no defaults):
+# example(!)
+# prepare_os_ssh_pubkey_file_path: ../../inventories/kubernetes/id_rsa.pub
+
+
+# Version of the kubernetes components which will be installed:
+kubernetes_version: "{{ k8s_version }}"
+
+
+# The name of container runtime that will be installed,
+# role with this name for chosen runtime will be loaded and executed (default "docker"):
+# container_runtime_name: docker
+
+# Version of docker community edition to install (default "18.06.2.ce"):
+# docker_ce_version: 18.06.2.ce
+
+# Version of containerd package to install (default "1.2.10"):
+# docker_containerd_version: 1.2.10
+
+
+# Variable which is common for most projects, used in
+# configuration files or file/directory names.
+# By default used as reference for keepalived_project_dir variable.
+# Currently used to name VRRP instance inside configureation file (default "test"):
+keepalived_project_name: "{{ project_name }}"
+
+# Localhost directory used to keep downloaded source files (default "files"):
+keepalived_local_dir: "{{ local_dir }}"
+
+# Keepalived source files version to download and build from (default "2.0.19"):
+# keepalived_version: 2.0.19
+
+# If keepalived is used with HAProxy which listens VRRP instance,
+# enables checking if HAProxy process is alive or not (default false):
+keepalived_haproxy_check_script: yes
+
+# Virtual IP adddress which will fail over within cluster members (no defaults):
+keepalived_vip_address: "{{ vip_address }}"
+
+# Network interface for VRRP instance and to bind VIP on (default "{{ ansible_default_ipv4.interface }}"):
+# keepalived_vrrp_interface: "{{ ansible_default_ipv4.interface }}"
+
+
+# Variable which is common for most projects, used in
+# configuration files or file/directory names.
+# By default used as reference for haproxy_local_dir variable (default "test"):
+haproxy_project_name: "{{ project_name }}"
+
+# Localhost directory used to keep downloaded source files (default "files"):
+haproxy_local_dir: "{{ local_dir }}"
+
+# HAProxy source files version to download and build from (default 2.0.9):
+# haproxy_version: 2.0.9
+
+# Lua source files version to download and build from (default 5.3.5):
+# haproxy_lua_version: 5.3.5
+
+# If HAProxy frontend will bind to non-local IP address (like virtual IP
+# which floats between servers), this will configure sysctl to allow that (default false):
+haproxy_nonlocal_bind: yes
+
+# Size of DH parameters file which will be generated to harden TLS connections (default 2048):
+# haproxy_dhparam_size: 2048
+
+# Default bind options for TLS (default "ssl-min-ver TLSv1.2"):
+# haproxy_ssl_default_bind_options: ssl-min-ver TLSv1.2
+
+# Default bind ciphers for TLS (default "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"):
+# haproxy_ssl_default_bind_ciphers: ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+
+# Default server options for TLS (default "ssl-min-ver TLSv1.2"):
+# haproxy_ssl_default_server_options: ssl-min-ver TLSv1.2
+
+# Default server ciphers for TLS (default "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"):
+# haproxy_ssl_default_server_ciphers: ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+
+# Enable Stats frontend which generates Prometheus-style metrics for monitoring (default false):
+# haproxy_metrics_prometheus: no
+
+# Name of the frontend (default "frontend"):
+haproxy_frontend_name: kubernetes-api
+
+# Hostname of IP to bind frontend on (no defaults):
+haproxy_frontend_host: "{{ vip_host }}"
+
+# Hostname of IP to bind frontend on (no defaults):
+haproxy_frontend_port: "{{ vip_port }}"
+
+# Name of the backend (default "backend"):
+haproxy_backend_name: master-nodes
+
+# Default server options for the backend (no defaults):
+# example(!)
+haproxy_backend_default_server_parameters: inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+
+# Array of backend servers' dns names or IP addresses (by default ansible_play_batch magic variable is used):
+# haproxy_backend_servers: []
+# - abc.xyz
+# - 1.2.3.4
+
+# Port on which backend servers listen (no defaults):
+haproxy_backend_servers_port: 6443
+
+
+# Name of separate device in /dev/disk/by-path/ for etcd storage (no defaults):
+# example(!)
+# etcd_disk_path: pci-0000:13:00.0-scsi-0:0:0:0
+
+# Defines the way to deploy etcd, currently the only supported option is
+# with kubeadm, which creates certificates and runs cluster inside containers (default "with_kubeadm"):
+etcd_deployment_type: with_kubeadm
+
+# Variable which is common for most projects, used in
+# configuration files or file/directory names.
+# By default used as reference for etcd_project_dir variable.
+# Currently used as prefix for etcd initial cluster token (default "test"):
+etcd_project_name: "{{ project_name }}"
+
+# Variable which is common for most projects, used as
+# project working directory on the localhost for the role.
+# Currently is used for fetching etcd certificates
+# to localhost and copying them among other cluster members (default "files/{{ etcd_project_name }}"):
+etcd_project_dir: "{{ local_dir }}/{{ project_name }}/{{ project_environment }}"
+
+# Versions of kubeadm and kubelet used in role, usueally this must satisfy
+# the version of kubernetes cluster, which will connect to etcd cluster:
+etcd_k8s_version: "{{ k8s_version }}"
+
+# SANs which will be added to etcd server certificate (by default ansible_play_batch magic variable is used):
+# etcd_server_cert_sans: []
+# example(!)
+# - abc.xyz
+# - 1.2.3.4
+
+# Initial cluster state for etcd cluster (default "new"):
+# etcd_initial_cluster_state: new
+
+# Initial cluster token to make sure etcd will contact
+# members of it's cluster only in the network (default "{{ etcd_project_name }}-etcd"):
+# etcd_initial_cluster_token: "{{ etcd_project_name }}-etcd"
+
+# Minimum version of TLS used (default "VersionTLS12"):
+# etcd_tls_min_version: VersionTLS12
+
+# Cipher suites used with TLS (default 
+# - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+# - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+# - TLS_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_RSA_WITH_AES_256_GCM_SHA384):
+# etcd_tls_cipher_suites:
+# - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+# - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+# - TLS_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_RSA_WITH_AES_256_GCM_SHA384
+
+# Time in minutes to wait for cluster to start up before health check (default 3):
+# example(!):
+etcd_wait_before_healthcheck: 5
+
+
+# Variable which is common for most projects, used in
+# configuration files or file/directory names.
+# By default used as reference for kubernetes_project_dir variable (default "test"):
+kubernetes_project_name: "{{ project_name }}"
+
+# Variable which is common for most projects, used as
+# project working directory on the localhost for the role.
+# Currently is used for copying etcd certificates to control plane nodes,
+# to download admin kube config to localhost and install initial psp if needed
+# (default "files/{{ kubernetes_project_name }}"):
+kubernetes_project_dir: "{{ local_dir }}/{{ project_name }}/{{ project_environment }}"
+
+# If to enable apiserver audit or not (default false):
+# kubernetes_apiserver_audit: no
+
+# DNS name or IP address which will be listening for apiserver requests,
+# this must equal to virtual IP to work correct in HA setup (no defaults):
+kubernetes_apiserver_host: "{{ vip_host }}"
+
+# Port which will listen for apiserser requests on apiserver host (no defaults):
+kubernetes_apiserver_port: "{{ vip_port }}"
+
+# List of external etcd DNS names or IP addresses to use
+# as backend for apiserver (default "{{ groups.etcdcluster }}"):
+# kubernetes_external_etcds: "{{ groups.etcdcluster }}"
+
+# List of admission controllers to be enabled in cluster (default
+# - NodeRestriction
+# - AlwaysPullImages
+# - NamespaceLifecycle
+# - LimitRanger
+# - ServiceAccount
+# - DefaultStorageClass
+# - DefaultTolerationSeconds
+# - MutatingAdmissionWebhook
+# - ValidatingAdmissionWebhook
+# - ResourceQuota ):
+kubernetes_admission_plugins:
+# example(!)
+- NodeRestriction
+- NamespaceLifecycle
+- ServiceAccount
+- DefaultStorageClass
+- MutatingAdmissionWebhook
+- ValidatingAdmissionWebhook
+# - DefaultTolerationSeconds
+# - AlwaysPullImages
+# - LimitRanger
+# - ResourceQuota
+# - PodSecurityPolicy
+# - DenyEscalatingExec
+# - SecurityContextDeny
+
+# Minimum version of TLS for control-plane components, usually
+# this must be the same as for load balancer as well as for etcd (default "VersionTLS12"):
+# kubernetes_tls_min_version: VersionTLS12
+
+# TLS cipher suites to use for control-plane components, usually
+# this must be the same as for load balancer as well as for etcd (default
+# - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+# - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+# - TLS_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_RSA_WITH_AES_256_GCM_SHA384 ):
+# kubernetes_tls_cipher_suites:
+# - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+# - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+# - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+# - TLS_RSA_WITH_AES_128_GCM_SHA256
+# - TLS_RSA_WITH_AES_256_GCM_SHA384
+
+
+# The name of network addon that will be installed,
+# role with this name for chosen addon will be loaded and executed (default "weave-net"):
+# net_addon_name: weave-net
+
+# Deployment type of weave-net (default "with_k8s"):
+# weave_net_deployment_type: with_k8s
+
+# Variable which is common for most projects, used in
+# configuration files or file/directory names.
+# By default used as reference for weave_net_project_dir variable (default "test"):
+weave_net_project_name: "{{ project_name }}"
+
+# Variable which is common for most projects, used as
+# project working directory on the localhost for the role.
+# Currently is used for creating weave-net workdir, creating secret files,
+# downloading kubernetes manifests, copying or creating symlink
+# to kube config etc. (default "files/{{ weave_net_project_name }}"):
+weave_net_project_dir: "{{ local_dir }}/{{ project_name }}/{{ project_environment }}"
+
+# Kubernetes version to use in weave-net installation (default 1.14.10):
+weave_net_k8s_version: "{{ k8s_version }}"
+
+# If encryption via secret must enabled between peers (default false):
+# weave_net_encryption: no
+
+# Environment variables of weave-net (no defaults):
+# example(!)
+weave_net_env: "&env.CHECKPOINT_DISABLE=1&env.CONN_LIMIT=200"
+
+
+# Taints which must be present on nodes (no defaults):
+kubernetes_taints: []
+# example(!)
+# - node: worker01
+#   taint: type=reserve:NoSchedule
+
+# Disable automatic node join to the cluster (default false):
+# kubernetes_harden_join: no
