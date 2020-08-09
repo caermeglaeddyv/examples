@@ -282,6 +282,12 @@ kubernetes_admission_plugins:
 # - TLS_RSA_WITH_AES_128_GCM_SHA256
 # - TLS_RSA_WITH_AES_256_GCM_SHA384
 
+# List of preflight errors which must be ignored while initializing
+# cluster or joining node to existing cluster via kubeadm:
+# kubernetes_ignore_preflight_errors:
+# example(!)
+# - NumCPU
+
 
 # The name of network addon that will be installed,
 # role with this name for chosen addon will be loaded and executed (default "weave-net"):
