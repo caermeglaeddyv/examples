@@ -327,3 +327,6 @@ kubernetes_taints: []
 
 # Disable automatic node join to the cluster (default false):
 # kubernetes_harden_join: no
+
+# Localhost directory used to keep k8s manifests and other role files (default "files"):
+kubernetes_local_dir: "{{ local_dir }}"
