@@ -24,7 +24,7 @@ For now, roles used in example playbook for kubernetes project, are tested with:
 - Kubernetes versions ~ 1.14.10-1.15.10
 - Ansible version >= 2.8.6
 - CentOS version >= 7.6 (1803) (not 8)
-- 3 separate hosts for etcd, 3 for control plane nodes and 1 for worker node
+- 3 separate hosts for etcd, 3 for control plane and 1 for node
 
 After all requirements are satisfied, example playbook for Kubernetes project can be executed like this (from the same directory as this README):
 ```bash

@@ -17,4 +17,4 @@
   become: yes
   tasks:
   - import_role:
-      name: rear
+      name: caermeglaeddyv.ansible_role_rear

@@ -18,28 +18,28 @@
   tasks:
   - name: prepare_os
     include_role:
-      name: prepare_os
+      name: caermeglaeddyv.ansible_role_prepare_os
 
 - hosts: kubernetescluster
   become: yes
   tasks:
-  - name: kubernetes/prepare_cluster
+  - name: prepare_k8s_cluster
     include_role:
-      name: kubernetes/prepare_cluster
+      name: caermeglaeddyv.ansible_role_prepare_k8s_cluster
   - name: container_runtime
     include_role:
-      name: container_runtime
+      name: caermeglaeddyv.ansible_role_container_runtime
 
-- hosts: masternodes
+- hosts: controlplane
   become: yes
   tasks:
   - name: keepalived
     include_role:
-      name: keepalived
+      name: caermeglaeddyv.ansible_role_keepalived
   - name: haproxy
     include_role:
-      name: haproxy
-  # As our keepalived and haproxy roles are executed on the hosts which will carry kubernetes/master role,
+      name: caermeglaeddyv.ansible_role_haproxy
+  # As our keepalived and haproxy roles are executed on the hosts which will carry k8s_control_plane role,
   # it's very important to make sure that before cluster initialization on first control-plane node,
   # keepalived and haproxy services are started on that node, and stopped on others:
   - name: stop keepalived and haproxy everywhere except first controller
@@ -56,26 +56,26 @@
   become: yes
   tasks:
   # Because our example playbook uses "with_kubeadm" deployment type of etcd as only on esupported for now,
-  # we need to run "kubernetes/prepare_cluster" role, and "container_runtime" role
+  # we need to run "prepare_k8s_cluster" role, and "container_runtime" role
   # with "container_runtime_name: docker" to install prerequisites for etcd installation via kubeadm:
   - name: pre-etcd
     include_role:
-      name: kubernetes/prepare_cluster
+      name: caermeglaeddyv.ansible_role_prepare_k8s_cluster
     when: etcd_deployment_type == 'with_kubeadm'
   - name: cri-etcd
     include_role:
-      name: container_runtime
+      name: caermeglaeddyv.ansible_role_container_runtime
     when: etcd_deployment_type == 'with_kubeadm'
   - name: etcd
     include_role:
-      name: etcd
+      name: caermeglaeddyv.ansible_role_etcd
 
-- hosts: masternodes
+- hosts: controlplane
   become: yes
   tasks:
-  - name: kubernetes/master
+  - name: k8s_control_plane
     include_role:
-      name: kubernetes/master
+      name: caermeglaeddyv.ansible_role_k8s_control_plane
   # Start keepalived and haproxy service to enable floating IP functiuonality and load-balancing:
   - name: start keepalived and haproxy everywhere
     systemd:
@@ -91,19 +91,19 @@
   tasks:
   - name: net_addon
     include_role:
-      name: net_addon
+      name: caermeglaeddyv.ansible_role_net_addon
 
-- hosts: workernodes
+- hosts: nodes
   become: yes
   tasks:
-  - name: kubernetes/worker
+  - name: k8s_node
     include_role:
-      name: kubernetes/worker
+      name: caermeglaeddyv.ansible_role_k8s_node
 
-- hosts: masternodes
+- hosts: controlplane
   become: yes
   tasks:
-  # Delete admin kubeconfig from master to keep it only on localhost for better security:
+  # Delete admin kubeconfig from control plane to keep it only on localhost for better security:
   - name: delete admin.conf from remote
     file:
       path: /etc/kubernetes/admin.conf

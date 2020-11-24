@@ -14,7 +14,7 @@ project_environment: development
 k8s_version: 1.15.10
 
 # Hostname or DNS name of highly-available api-server endpoint:
-vip_host: master
+vip_host: controlplane
 
 # IP address of highly-available api-server endpoint:
 vip_address: 
@@ -126,7 +126,7 @@ haproxy_frontend_host: "{{ vip_host }}"
 haproxy_frontend_port: "{{ vip_port }}"
 
 # Name of the backend (default "backend"):
-haproxy_backend_name: master-nodes
+haproxy_backend_name: controlplane-nodes
 
 # Default server options for the backend (no defaults):
 # example(!)
@@ -322,7 +322,7 @@ weave_net_env: "&env.CHECKPOINT_DISABLE=1&env.CONN_LIMIT=200"
 # Taints which must be present on nodes (no defaults):
 kubernetes_taints: []
 # example(!)
-# - node: worker01
+# - node: node01
 #   taint: type=reserve:NoSchedule
 
 # Disable automatic node join to the cluster (default false):
